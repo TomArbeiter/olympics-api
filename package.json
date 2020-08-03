@@ -1,0 +1,22 @@
+{
+  "name": "olympicsapi",
+  "version": "1.0.0",
+  "description": "API to get historical data about Track & Field events at the Olympics",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomarbeiter/olympics-api.git"
+  },
+  "author": "Tom Arbeiter",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/tomarbeiter/olympics-api/issues"
+  },
+  "homepage": "https://github.com/tomarbeiter/olympics-api#readme",
+  "dependencies": {
+    "mongodb": "^3.6.0"
+  }
+}
