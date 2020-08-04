@@ -48,7 +48,7 @@ const update = async (filters, updates, collection) => {
     await client
       .db(databaseName)
       .collection(collection)
-      .findOneAndUpdate(filters, updates)
+      .updateOne(filters, updates)
     client.close();
   }
   catch (error) {
