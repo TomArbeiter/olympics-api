@@ -7,8 +7,13 @@
 const { query, update } = require("./services/mongo");
 const { createResponseObject, validatePathParameters, validateQueryParameters } = require("./services/util");
 
-// Function to handle GET requests made with the /events path
-const events = async (event) => {
+/*
+  Function to handle GET requests made with the /events path.
+*/
+const events = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validateQueryParameters(event.queryStringParameters, event.path);
   if (isNotValid) return isNotValid;
 
@@ -25,9 +30,13 @@ const events = async (event) => {
 }
 
 
-// Function to handle GET requests made with the /events/{eventId} path
-const eventsById = async (event) => {
-  // Validate path parameter - if not valid, return an error response object, else query for and return requested data
+/*
+  Function to handle GET requests made with the /events/{eventId} path.
+*/
+const eventsById = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validatePathParameters(event.pathParameters);
   if (isNotValid) return isNotValid;
 
@@ -46,10 +55,14 @@ const eventsById = async (event) => {
   }
 
 
-// Function to handle PUT requests made with the /events/{eventId} path
-// No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified event
-const likeEvent = async (event) => {
-  // Validate path parameter - if not valid, return an error response object, else query for and return requested data
+/* 
+  Function to handle PUT requests made with the /events/{eventId} path.
+  No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified event.
+*/
+const likeEvent = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validatePathParameters(event.pathParameters);
   if (isNotValid) return isNotValid;
 
@@ -64,8 +77,13 @@ const likeEvent = async (event) => {
 }
 
 
- // Function to handle GET requests made with the /athletes path.
-const athletes = async (event) => {
+/*
+  Function to handle GET requests made with the /athletes path.
+*/
+const athletes = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validateQueryParameters(event.queryStringParameters, event.path);
   if (isNotValid) return isNotValid;
 
@@ -82,9 +100,13 @@ const athletes = async (event) => {
 }
 
 
-// Function to handle GET requests made with the /athletes/{athleteId} path
-const athletesById = async (event) => {
-  // Validate path parameter - if not valid, return an error response object, else query for and return requested data
+/*
+  Function to handle GET requests made with the /athletes/{athleteId} path.
+*/
+const athletesById = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validatePathParameters(event.pathParameters);
   if (isNotValid) return isNotValid;
 
@@ -103,10 +125,14 @@ const athletesById = async (event) => {
 }
 
 
-// Function to handle PUT requests made with the /athletes/{athleteId} path
-// No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified athlete
-const likeAthlete = async (event) => {
-  // Validate path parameter - if not valid, return an error response object, else query for and return requested data
+/*
+  Function to handle PUT requests made with the /athletes/{athleteId} path.
+  No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified athlete.
+*/
+const likeAthlete = async (event, context) => {
+  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
+  context.callbackWaitsForEmptyEventLoop = false;
+
   const isNotValid = validatePathParameters(event.pathParameters);
   if (isNotValid) return isNotValid;
 

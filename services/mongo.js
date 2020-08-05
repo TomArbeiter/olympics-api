@@ -5,8 +5,28 @@
 */
 
 const MongoClient = require("mongodb").MongoClient;
-const connectionURL = process.env.MONGO_CONNECTION;
-const databaseName = process.env.DB_NAME;
+
+// Will store connected Mongo Client here for potential reuse in temporally local Lambda invocations
+// Takes advantage of the fact that everything outside of the handler functions remains initialized in the Lambda container for ~5 minutes after cold-start invocation
+let dbClient = null;
+
+/*
+  Function to manage the connection to Mongo DB.
+  Will check if a connection still exists from a previous invocation in the same Lambda container, otherwise creates a new one.
+  Results in an average latency improvement of 2x for every call in a given Lambda container after the first one (cold-starts are still slow).
+*/
+const connectDB = async (connectionString) => {
+  if (dbClient) return dbClient;
+  else {
+    try {
+      dbClient = new MongoClient(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});      
+      return await dbClient.connect();
+    }
+    catch (error){ 
+      console.log("Error creating connection to MongoDB:", error);
+    }
+  } 
+}
 
 
 /*
@@ -15,21 +35,17 @@ const databaseName = process.env.DB_NAME;
   Returns a list containing all documents matching the filter criteria. 
 */
 const query = async (collection, filters, projection) => {
-  const client = new MongoClient(connectionURL, {useNewUrlParser: true, useUnifiedTopology: true});
   try {
-    await client.connect();
-    const results = await client
-      .db(databaseName)
+    await connectDB(process.env.MONGO_CONNECTION);
+    const results = await dbClient
+      .db(process.env.DB_NAME)
       .collection(collection)
       .find(filters)
       .project(projection)
       .toArray();
-
-    client.close();
     return results;
   }
   catch (error) {
-    client.close();
     console.log("Error occured while querying MongoDB:", error);
   }
 }
@@ -42,17 +58,14 @@ const query = async (collection, filters, projection) => {
   The "_id" field on both documents must match in order for the replacement to succeed.
 */
 const update = async (filters, updates, collection) => {
-  const client = new MongoClient(connectionURL, {useNewUrlParser: true, useUnifiedTopology: true});
   try {
-    await client.connect();
-    await client
-      .db(databaseName)
+    await connectDB(process.env.MONGO_CONNECTION);
+    await dbClient
+      .db(process.env.DB_NAME)
       .collection(collection)
       .updateOne(filters, updates)
-    client.close();
   }
   catch (error) {
-    client.close();
     console.log("Error occured while updating a document in MongoDB:", error);
   }
 }

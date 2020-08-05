@@ -19,7 +19,9 @@ const createErrorResponseObject = (code, message) => {
 }
 
 
-// Function to create standard 200 response with passed response body
+/*
+  Function to create standard 200 response with passed response body
+*/
 const createResponseObject = (response) => {
   return {
     statusCode: 200,
@@ -29,8 +31,10 @@ const createResponseObject = (response) => {
 }
 
 
-// Function used to handle validating path parameters for the 4 methods that require them
-// Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+/* 
+  Function used to handle validating path parameters for the 4 methods that require them
+  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+*/
 const validatePathParameters = (pathParameters) => {
   // Validate that pathParamters object has exactly 1 property
   if (pathParameters == undefined || pathParameters == null){
@@ -64,9 +68,11 @@ const validatePathParameters = (pathParameters) => {
 }
 
 
-// Function used to handle validating query string parameters for the 2 methods that require them
-// Takes in the "path" of the request because the "team" parameter cannot be used for the "/events" path - instead of duplicating this whole function for that little quirk, I've opted to just hard check it in here
-// Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+/* 
+  Function used to handle validating query string parameters for the 2 methods that require them
+  Takes in the "path" of the request because the "team" parameter cannot be used for the "/events" path - instead of duplicating this whole function for that little quirk, I've opted to just hard check it in here
+  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+*/
 const validateQueryParameters = (queryParameters, path) => {
   // Check if any query string paramters are present (though they are highly recommended to filter the results, they aren't technically required)
   // If there are none, the request is valid but the results will be truncated after 150 records are returned
