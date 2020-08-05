@@ -6,7 +6,20 @@
 
 const {validTeams, validYears} = require("./constants");
 
-// Function to create an error response object with the specified code and message
+/*
+  Function to convert "year" query parameter to a number type (gets stringified by API Gateway).
+  Checks if query parameter object exists and has the year property, then converts and returns the object. 
+*/
+const convertYearToNumber = (params) => {
+  if (params != undefined && params != null && params.hasOwnProperty("year")){
+    params.year = Number(params.year);
+  }
+  return params;
+}
+
+/*
+  Function to create an error response object with the specified code and message.
+*/
 const createErrorResponseObject = (code, message) => {
   return {
     statusCode: code,
@@ -32,8 +45,8 @@ const createResponseObject = (response) => {
 
 
 /* 
-  Function used to handle validating path parameters for the 4 methods that require them
-  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+  Function used to handle validating path parameters for the 4 methods that require them.
+  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean).
 */
 const validatePathParameters = (pathParameters) => {
   // Validate that pathParamters object has exactly 1 property
@@ -69,9 +82,9 @@ const validatePathParameters = (pathParameters) => {
 
 
 /* 
-  Function used to handle validating query string parameters for the 2 methods that require them
-  Takes in the "path" of the request because the "team" parameter cannot be used for the "/events" path - instead of duplicating this whole function for that little quirk, I've opted to just hard check it in here
-  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean)
+  Function used to handle validating query string parameters for the 2 methods that require them.
+  Takes in the "path" of the request because the "team" parameter cannot be used for the "/events" path - instead of duplicating this whole function for that little quirk, I've opted to just hard check it in here.
+  Returns either an error response object if any error is found or "false" if the parameters are valid ("false" may be misleading to some people, but it helps keep the logic in handler.js clean).
 */
 const validateQueryParameters = (queryParameters, path) => {
   // Check if any query string paramters are present (though they are highly recommended to filter the results, they aren't technically required)
@@ -83,7 +96,7 @@ const validateQueryParameters = (queryParameters, path) => {
   // Loop over all of the parameters in the query string object, checking first that the parameter name is valid, then checking that the value is valid
   for (let [param, value] of Object.entries(queryParameters)) {
     if (param != "year" && param != "team" && param != "sex"){
-      return createErrorResponseObject(400, "Invalid query parameter: " + key + ". Please reference the Swagger docs for the appropriate parameter names.");
+      return createErrorResponseObject(400, "Invalid query parameter: " + param + ". Please reference the Swagger docs for the appropriate parameter names.");
     }
 
     switch (param){
@@ -117,6 +130,7 @@ const validateQueryParameters = (queryParameters, path) => {
 
 
 module.exports = {
+  convertYearToNumber,
   createErrorResponseObject,
   createResponseObject,
   validatePathParameters,

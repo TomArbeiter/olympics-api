@@ -5,7 +5,7 @@
 */
 
 const { query, update } = require("./services/mongo");
-const { createResponseObject, validatePathParameters, validateQueryParameters } = require("./services/util");
+const { createResponseObject, validatePathParameters, validateQueryParameters, convertYearToNumber } = require("./services/util");
 
 /*
   Function to handle GET requests made with the /events path.
@@ -18,11 +18,7 @@ const events = async (event, context) => {
   if (isNotValid) return isNotValid;
 
   else {
-    // Convert year parameter to number type if it exists
-    if (event.queryStringParameters != undefined && event.queryStringParameters != null && event.queryStringParameters.hasOwnProperty("year")){
-      event.queryStringParameters.year = Number(event.queryStringParameters.year);
-    }
-
+    event.queryStringParameters = convertYearToNumber(event.queryStringParameters);
     // Query for data
     const response = await query(process.env.EVENT_COLLECTION, event.queryStringParameters, { _id: 0 });
     return createResponseObject(response);
@@ -34,7 +30,6 @@ const events = async (event, context) => {
   Function to handle GET requests made with the /events/{eventId} path.
 */
 const eventsById = async (event, context) => {
-  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
   context.callbackWaitsForEmptyEventLoop = false;
 
   const isNotValid = validatePathParameters(event.pathParameters);
@@ -60,7 +55,6 @@ const eventsById = async (event, context) => {
   No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified event.
 */
 const likeEvent = async (event, context) => {
-  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
   context.callbackWaitsForEmptyEventLoop = false;
 
   const isNotValid = validatePathParameters(event.pathParameters);
@@ -81,18 +75,13 @@ const likeEvent = async (event, context) => {
   Function to handle GET requests made with the /athletes path.
 */
 const athletes = async (event, context) => {
-  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
   context.callbackWaitsForEmptyEventLoop = false;
 
   const isNotValid = validateQueryParameters(event.queryStringParameters, event.path);
   if (isNotValid) return isNotValid;
 
   else {
-    // Convert year parameter to number type if it exists
-    if (event.queryStringParameters != undefined && event.queryStringParameters != null && event.queryStringParameters.hasOwnProperty("year")){
-      event.queryStringParameters.year = Number(event.queryStringParameters.year);
-    }
-
+    event.queryStringParameters = convertYearToNumber(event.queryStringParameters);
     // Query for data
     const response = await query(process.env.ATHLETE_COLLECTION, event.queryStringParameters, { _id: 0 });
     return createResponseObject(response);
@@ -104,7 +93,6 @@ const athletes = async (event, context) => {
   Function to handle GET requests made with the /athletes/{athleteId} path.
 */
 const athletesById = async (event, context) => {
-  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
   context.callbackWaitsForEmptyEventLoop = false;
 
   const isNotValid = validatePathParameters(event.pathParameters);
@@ -130,7 +118,6 @@ const athletesById = async (event, context) => {
   No data is actually passed to this handler; rather, the PUT call implies incrementing the likes counter on the specified athlete.
 */
 const likeAthlete = async (event, context) => {
-  // Allows Lambda to return results without waiting for database connection to close - this means the connection can be reused on subsequent, temporally local Lambda invocations 
   context.callbackWaitsForEmptyEventLoop = false;
 
   const isNotValid = validatePathParameters(event.pathParameters);

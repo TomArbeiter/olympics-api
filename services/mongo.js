@@ -13,7 +13,7 @@ let dbClient = null;
 /*
   Function to manage the connection to Mongo DB.
   Will check if a connection still exists from a previous invocation in the same Lambda container, otherwise creates a new one.
-  Results in an average latency improvement of 2x for every call in a given Lambda container after the first one (cold-starts are still slow).
+  Results in an average latency improvement of 2x for every call in a given Lambda container after the first one (cold-starts are still slow). See GitHub docs for more info.
 */
 const connectDB = async (connectionString) => {
   if (dbClient) return dbClient;
@@ -31,7 +31,7 @@ const connectDB = async (connectionString) => {
 
 /*
   Function to query a collection in MongoDB. 
-  Specify the collection to query in the "collection" parameter, the selection conditions in the "filter" parameter, and the fields to return in the "projection" parameter.
+  Specify the collection to query in the "collection" parameter, the selection conditions in the "filters" parameter, and the fields to return in the "projection" parameter.
   Returns a list containing all documents matching the filter criteria. 
 */
 const query = async (collection, filters, projection) => {
@@ -41,12 +41,13 @@ const query = async (collection, filters, projection) => {
       .db(process.env.DB_NAME)
       .collection(collection)
       .find(filters)
+      .limit(150)
       .project(projection)
       .toArray();
     return results;
   }
   catch (error) {
-    console.log("Error occured while querying MongoDB:", error);
+    console.log("Error occurred while querying MongoDB:", error);
   }
 }
 
@@ -63,10 +64,10 @@ const update = async (filters, updates, collection) => {
     await dbClient
       .db(process.env.DB_NAME)
       .collection(collection)
-      .updateOne(filters, updates)
+      .updateOne(filters, updates);
   }
   catch (error) {
-    console.log("Error occured while updating a document in MongoDB:", error);
+    console.log("Error occurred while updating a document in MongoDB:", error);
   }
 }
 
