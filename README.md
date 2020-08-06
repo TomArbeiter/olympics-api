@@ -4,7 +4,7 @@
 This project was born out of both my love for running and my interest in serverless computing platforms like AWS Lambda. This API sits on top of a small MongoDB instance that stores some basic historical information about Olympic Track & Field events and athletes. Because this is a project more for expanding my knowledge about API development and the AWS platform, and beacuse I don't want a big AWS bill every month, there are very limited request quotas and usage limits. If you would like to try the API out, feel free to send me an email (arbeitertom@gmail.com) to request a temporary API key and get more details.
 
 ## Documentation
-To view the Swagger Docs for this API, please visit: https://api.tomarbeiter.com/docs. Here you will find detailed information about each API method including parameters and response objects. The base URL for the API methods is: https://api.tomarbeiter.com.
+To view the Swagger Docs for this API, please visit: https://docs.tomarbeiter.com. Here you will find detailed information about each API method including parameters and response objects. The base URL for the API methods is: https://api.tomarbeiter.com.
 
 ## Architecture
 This API makes use of Swagger for documentation, AWS API Gateway for handling requests, AWS Lambda to execute the handler functions, AWS Route 53 to manage custom domains and routing, Serverless Framework for easy deployment, and MongoDB for lightweight, easy-to-use (and free!) storage. 
