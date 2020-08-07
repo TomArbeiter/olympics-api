@@ -1,0 +1,598 @@
+openapi: 3.0.0
+
+servers:
+# Added by API Auto Mocking Plugin
+  - description: Base API path
+    url: https://api.tomarbeiter.com
+info:
+  description: REST API used to retrieve historical Track & Field data from the Olympics.
+  version: "1.0.0"
+  title: Olympic Track & Field API
+  contact:
+    email: arbeitertom@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+security:
+  - ApiKey: [] 
+####################################################################################################
+
+paths:
+  /events:
+    get:
+      summary: Get unique identifier data for events.
+      operationId: events
+      description: |
+        Returns a list of Olympic Track & Field events and their unique identifiers for a given year (each event-year combo has a unique identifier). Filter by year of competition and/or sex. To get a more detailed profile of an event in a given year, including participants and medalists, use /events/{eventId}. Return is limited to the first 150 values, so use the filters to be sure you don't lose data.
+      parameters:
+        - in: query
+          name: year
+          description: Filter results by year of competition.
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: sex
+          description: Filter results by event sex.
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: GET /event was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventUniqueIdList'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required query parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+        
+          
+####################################################################################################
+  
+  /events/{eventId}:
+    get:
+      summary: Get a detailed profile for a given event.
+      operationId: get_events/{eventId}
+      description: |
+        Returns a detailed profile for a given event in a given year including id, event name, city, year, count of 'likes', and a list of the competitors in the event.
+      parameters:
+        - in: path
+          name: eventId
+          description: Unique identifier to fetch a particular event's profile.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: GET /event/{eventId} was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventById'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required path parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+
+    put:
+      summary: "Give an event a 'Like'."
+      operationId: put_events/{eventId}
+      description: |
+        Increments a counter on a particular event that keeps track of how many 'Likes' the event has.
+      parameters:
+        - in: path
+          name: eventId
+          description: Unique identifier for the event being 'Liked'.
+          required: true
+          schema:
+            type: integer
+      
+      responses:
+        '200':
+          description: PUT /event/{eventId} was successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "'Like' counter incremented for event: {eventId}."
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required path parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+          
+####################################################################################################
+
+  /athletes:
+    get:
+      summary: Get unique identifier data for athletes.
+      operationId: athletes
+      description: |
+        Returns a list of athletes and their unique identifiers. Can be filtered by the first team the athlete competed for, sex of the athlete, or the first year the athlete competed in the Olympics. To get a more detailed profile of an athlete, use /athletes/{athleteId}. All returns are limited to 150 items, so you have to make use of the query parameters to filter the list down to a reasonable size in order to not lose data. 
+      parameters:
+        - in: query
+          name: sex
+          description: Filter results for a specific sex.
+          required: false
+          schema:
+            type: string
+            example: M
+        - in: query
+          name: year
+          description: Filter results for the first year an athlete competed in the Olympics (must be a year the Olympics occured).
+          required: false
+          schema:
+            type: integer
+            example: 1896
+        - in: query
+          name: team
+          description: Filter results for the first team an athlete competed for.
+          required: false
+          schema:
+            type: string
+            example: United States
+    
+      responses:
+        '200':
+          description: GET /athlete was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AthleteUniqueIdList'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required query parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+                    
+####################################################################################################
+      
+  /athletes/{athleteId}:
+    get:
+      summary: Get a detailed profile for a given athlete.
+      operationId: athletes/{athleteId}
+      description: |
+        Returns a detailed profile for a given athlete including id, name, sex, and a list of events in which they competed. Each entry in the events list contains team, age at the time of the competition, and all of the relevant information about the event itself, including whether or not the athlete earned a medal.
+      parameters:
+        - in: path
+          name: athleteId
+          description: Unique identifier to fetch a particular athlete's profile.
+          schema:
+            type: integer
+          required: true
+    
+      responses:
+        '200':
+          description: GET /athlete was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AthleteById'
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required path parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+                    
+    put:
+      summary: "Give an athlete a 'Like'."
+      operationId: put_athletes/{athleteId}
+      description: |
+        Increments a counter on a particular athlete that keeps track of how many 'Likes' the athlete has.
+      parameters:
+        - in: path
+          name: athleteId
+          description: Unique identifier for the athlete being 'Liked'.
+          required: true
+          schema:
+            type: integer
+      
+      responses:
+        '200':
+          description: PUT /event/{eventId} was successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: "'Like' counter incremented for athlete: {athleteId}."
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errorCode: 
+                    type: integer
+                    example: 400
+                  errorMessage: 
+                    type: string
+                    example: "One or more required path parameters is missing."
+        '403':
+          description: Missing or invalid API key.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 403
+                    errorMessage: 
+                      type: string
+                      example: "Missing or invalid API key"
+        '429':
+          description: Too many requests.
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    errorCode: 
+                      type: integer
+                      example: 429
+                    errorMessage: 
+                      type: string
+                      example: "Throttled"
+                      
+###################################################################################################
+
+# Schemas 
+components:
+  securitySchemes:
+    ApiKey: 
+      type: apiKey
+      in: header     
+      name: x-api-key 
+
+  schemas:
+     # Schema for object returned by the GET /events method  
+    EventUniqueIdList:
+      type: array
+      items:
+        type: object
+        properties:
+          eventId:
+            type: integer
+            example: 10000
+          eventName:
+            type: string
+            example: "Men's 1500 metres"
+          sex: 
+            type: string
+            example: M
+          year:
+            type: integer
+            example: 1896
+          city: 
+            type: string
+            example: Athina
+          likes:
+            type: integer
+            example: 7
+  
+####################################################################################################
+  
+  # Schema for the list of athletes in each event
+    EventById: 
+      description: Object containing information about an event and a list of competing athletes in the Olympics for a given year.
+      type: object
+      properties:
+        eventId: 
+          type: integer
+          example: 10000
+        eventName:
+          type: string
+          example: Men's 1500 metres
+        sex:
+          type: string
+          example: M
+        year:
+          type: integer
+          example: 1896
+        city: 
+          type: string
+          example: Athina
+        likes: 
+          type: integer
+          minimum: 0
+          example: 7
+        athletes:
+          $ref: '#/components/schemas/EventByIdAthletes'
+  
+  
+    # Schema for the list of competitors in each event
+    EventByIdAthletes:
+      description: List containing all competitors in the specified event.
+      type: array
+      items:
+        type: object
+        properties:
+          athleteId: 
+            type: integer
+            example: 21971
+          athleteName:
+            type: string
+            example: Arthur Charles Blake
+          sex:
+            type: string
+            example: M
+          age: 
+            type: integer
+            example: 24
+          team:
+            type: string
+            example: United States
+          noc: 
+            type: string
+            example: USA
+          medal:
+            type: string
+            example: Silver
+      
+################################################################################################### 
+     
+    #Schema for list of athlete unique identifiers returned by GET /athletes
+    AthleteUniqueIdList:
+      description: List of athletes and unique identifiers based on filters applied in query parameters.
+      type: array
+      items:
+        type: object
+        properties:
+          athleteId: 
+            type: integer
+            example: 21971
+          athleteName: 
+            type: string
+            example: Arthur Charles Blake
+          sex:
+            type: string
+            example: M
+          firstYear:
+            type: integer
+            example: 1896
+          firstTeam:
+            type: string
+            example: United States
+          likes: 
+            type: integer
+            example: 5
+
+####################################################################################################
+     
+    # Schema for the athlete object returned by GET /athletes/{athleteId}
+    AthleteById:
+      description: Object containing information about an athlete and a list of their participation in the Olympics.
+      type: object
+      properties:
+        athleteId: 
+          type: integer
+          example: 21971
+        name:
+          type: string
+          example: Arthur Charles Blake
+        sex:
+          type: string
+          example: M
+        likes: 
+            type: integer
+            example: 5
+        events:
+          $ref: '#/components/schemas/AthleteByIdEvents'
+          
+
+    #Schema for list of events for a given athlete
+    AthleteByIdEvents:
+      description: Object containing the list of events an athlete participated in and their result.
+      type: array
+      items:
+        type: object
+        properties:
+          eventId:
+            type: integer
+            example: 10000
+          eventName:
+            type: string
+            example: "Men's 1500 metres"
+          year:
+            type: integer
+            example: 1896
+          city:
+            type: string
+            example: 'Athina'
+          age: 
+            type: integer
+            example: 24
+          team: 
+            type: string
+            example: United States
+          noc: 
+            type: string
+            example: USA
+          medal:
+            type: string
+            example: Silver
+      
+####################################################################################################
